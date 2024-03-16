@@ -7,7 +7,10 @@ require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = ["https://papaya-druid-056eaf.netlify.app"];
+const allowedOrigins = [
+  "https://papaya-druid-056eaf.netlify.app",
+  "http://localhost:5173",
+];
 
 const io = socketIo(server, {
   cors: {
@@ -18,6 +21,8 @@ const io = socketIo(server, {
         callback(new Error("Not allowed by CORS"));
       }
     },
+    methods: "GET,POST", // Allow only GET and POST requests
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
   },
 });
 
@@ -90,6 +95,7 @@ const initializeBoard = () => {
 
 io.on("connection", (socket) => {
   connectedClients.push(socket.id);
+  console.log("A user connected: " + socket.id);
 
   if (connectedClients.length === 2) {
     initializeBoard();
