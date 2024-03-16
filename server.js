@@ -6,12 +6,18 @@ require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
+
+const allowedOrigins = ["https://papaya-druid-056eaf.netlify.app"];
+
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173", // Allow requests from this origin
-    methods: ["GET", "POST"], // Allowable methods
-    allowedHeaders: ["my-custom-header"], // Custom headers you might use
-    credentials: true, // Allow sending of cookies / credentials
+    origin: function (origin, callback) {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   },
 });
 
